@@ -4,4 +4,5 @@
 
 - list buckets
 - lists contents of buckets
+- setup bucket
 
