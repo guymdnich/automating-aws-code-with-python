@@ -1,22 +1,25 @@
-#import boto3
-#import sys
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-#session=boto3.Session(profile_name='pythonAutomation')
-#s3=session.resource('s3')
+"""Webotron: Deploy websites with aws.
 
-#if __name__ == '__main__':
-#    print(sys.argv)
-#    for bucket in s3.buckets.all():
-#        print(bucket)
+Webotron automates the process of deploying static websites to AWS.
+- Configure AWS S3 buckets
+  - Create them
+  - Set them up for static website hosting
+  - Deploy local files to them
+- Configure DNS with AWS Route 53
+- Configure a Content Delivery Network and SSL with AWS CloudFront
+"""
 
 import boto3
 import click
 
 from bucket import BucketManager
 
-
 session=boto3.Session(profile_name='pythonAutomation')
 bucket_manager = BucketManager(session)
+
 
 @click.group()
 def cli():
@@ -30,6 +33,7 @@ def list_buckets():
         print(bucket)
 #        print(session.region_name)
 
+
 @cli.command('list-bucket-objects')
 @click.argument('bucket')
 def list_bucket_objects(bucket):
@@ -37,11 +41,11 @@ def list_bucket_objects(bucket):
     for obj in bucket_manager.all_objects(bucket):
         print(obj)
 
+
 @cli.command('setup-bucket')
 @click.argument('bucket')
 def setup_bucket(bucket):
     "Create and configure S3 bucket"
-    s3_bucket = None
     s3_bucket = bucket_manager.init_bucket(bucket)
     bucket_manager.set_policy(s3_bucket)
     bucket_manager.configure_website(s3_bucket)
@@ -56,7 +60,6 @@ def sync(pathname, bucket):
     "Sync contents of PATHNAME to BUCKET"
     bucket_manager.sync(pathname, bucket)
 
+
 if __name__ == '__main__':
     cli()
-#    list_buckets()
-#    list_bucket_objects()
